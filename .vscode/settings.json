@@ -1,0 +1,17 @@
+{
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-pdf",
+                "-shell-escape", // Add this line to enable shell escape only for this project
+                "-outdir=%OUTDIR%",
+                "%DOC%"
+            ]
+        }
+    ]
+}
