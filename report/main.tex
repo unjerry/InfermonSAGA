@@ -32,8 +32,55 @@
 \end{abstract}
 
 \section{Main Goal}
+The inspiration is from
+\cite[DragonDungeonRun]{Dragon_Dungeon_Run},
+which is a very simple to implement grid base
+game.
+
+But I don't want it just to be a vertical
+level only game.
+But more rather like a open world game,
+with systems like "farming", "fighting",
+"adventrue" and even some kind of character
+"RPG" and "progression".
+
+For the "adventure" part, the world is just
+a lot of square grid, which the player is
+always takeup one grid.
+The grid can be viewed as
+little piece of a manifold.
+The map of the world can be a lot of
+2D-manifold with different inherent
+($nP^2$ or $nT^2$, does't mater afterall
+we will have a more realistic and
+non-theoretical method to realise this in
+a game),
+connected by "portal". This forms the
+core "adventrue" part of the game.
+
+For the "fighting" part is just like
+usual RPG game, the monster or enemies also
+takeup one square grid, and less dynamic
+are needed for the moster AI.
+
+For the "farming" part we can use the
+tools to make a square grid in to a
+farmland,which we can grow agricultures
+on this square grid.
+The productions by farming can help
+"exploration" and "fighting"
+
+The final part is mainly need high
+quality character design. This need
+a lot of art and game script effort,
+which may not be affordable for myself
+at present.
+
 \section{Roadmap}
-% \cite[EMH]{EMH}
+\subsection[adventrue]{Topology structure for adventrue}
+\subsection[fighting]{fighting system}
+\subsection[farming]{farming system}
+
 \section[deps]{Dependencies}
 This section, the third-party dependencies
 will be logged and explained about how they
