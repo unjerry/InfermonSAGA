@@ -8,7 +8,6 @@
 \usepackage{algorithmic}
 
 \usepackage{minted}
-\usepackage{xcolor}  % For syntax highlighting colors
 
 \usepackage{amsthm}
 % Define new theorem-like environments
@@ -43,27 +42,55 @@ are used in this specific project.
 The glad is used for the version that support
 the multiple-window graphics. The configuration
 for this dependence is according to
-\cite[gladMultiwinMx]{GLAD_multiwin_mx}.
+\cite[gladMultiwinMx]{GLAD_multiwin_mx}. We
+need to do this once in the top CMakeLists.txt.
+
+\begin{minted}[frame=single, linenos]{cmake}
+    set(GLAD_SOURCES_DIR "${PROJECT_SOURCE_DIR}/glad")
+    add_subdirectory("${GLAD_SOURCES_DIR}/cmake" glad_cmake)
+    glad_add_library(glad REPRODUCIBLE MX API gl:core=4.3)
+\end{minted}
+
+Remember to include glad right before glfw as
+follow.
+
+\begin{minted}[frame=single, linenos]{cpp}
+    #include <glad/gl.h>
+    #include <GLFW/glfw3.h>
+\end{minted}
+
 \subsection[GLFW]{GLFW}
 The main graphics dependencies is glfw3.
 I used its sources code form its Github
 repository.
 
-And Simply
-
-\begin{minted}[frame=single,framesep=10pt,linenos,mathescape]{python}
-    def greet(name):
-        print(f"Hello, {name}!")
-    greet('Alice')
-\end{minted}
+And Simply use this two line in CMakeLists.txt
+is okay.
 
 \begin{minted}[frame=single, linenos]{cmake}
-    cmake_minimum_required(VERSION 3.10)
-    project(MyProject)
-    add_executable(MyApp main.cpp)
+    add_subdirectory(glfw)
+    include_directories(glfw/include)
+\end{minted}
+
+Then include GLFW in the file use it.
+
+\begin{minted}[frame=single, linenos]{cpp}
+    #include <GLFW/glfw3.h>
 \end{minted}
 
 \subsection[IMGUI]{IMGUI}
+I choose to use the maximum features of the
+imgui, which contains "docking" and
+"Multi Viewports"
+
+To set up imgui with the glad and glfw is
+according to
+\cite[setupImgui]{example-if-you-are-using-glfw--openglwebgl}.
+
+To set up imgui with "Multi Viewports" feature
+is according to
+\cite[text]{Multi-Viewports}.
+
 
 % \section{Current Roadmap}
 % \subsection{statistics}
