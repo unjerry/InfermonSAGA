@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage[UTF8]{ctex}
 \usepackage{amsmath,amssymb,amsfonts}  % For math symbols and fonts
 \usepackage{graphicx}                   % For including images
 \usepackage{hyperref}                   % For hyperlinks
@@ -78,6 +79,226 @@ at present.
 
 \section{Roadmap}
 \subsection[adventrue]{Topology structure for adventrue}
+For this we need a mathematic based
+data structure to save our map and
+portals.
+
+Take the one eighth of a sphere as an example.
+Figure~\ref{fig:sphere} shows how this expansion
+will look in general.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.45\textwidth]{figs/generalExplanation.png}
+    \caption{Suqare tile expansion of $\frac{1}{8}$ sphere}
+    \label{fig:sphere}
+\end{figure}
+
+The shadow area with a question mark,
+means this place have a conflict and
+will be view as a "Portal".
+
+\begin{definition}[Portal]
+    \label{def:Portal}
+    The shadowed question marked tile
+    is a portal.
+\end{definition}
+
+This is inevitable because the curvature
+of the sphere is not equal to the plane.
+But this is a flavor of the Infermon view
+the world he lived in.
+When you try to enter the "portal" you will end
+in an another square the current square
+you leave connected to.
+
+The second example is about a important operation
+to manipulate of the space Topology.
+Which is Tunneling.
+This process is showed in
+Figure~\ref{fig:Tunneling}.
+In this process, tile "A" was turned into a
+portal tile.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.45\textwidth]{figs/tunneling Portal.png}
+    \includegraphics[width=0.45\textwidth]{figs/tunneling Portal0.png}
+    \includegraphics[width=0.45\textwidth]{figs/tunneling Portal1.png}
+    \includegraphics[width=0.45\textwidth]{figs/tunneling Portal tiling.png}
+    \caption{Tunneling process}
+    \label{fig:Tunneling}
+\end{figure}
+
+For there is some special case for the portal,
+which is the Tunneling portal,
+we need to make some more definition.
+The Tunneling portal has a different visualizaiton
+requirement.
+
+\begin{definition}[Intrinsic Portal]
+    \label{def:IntrinsicPortal}
+    Those portal that inevitable to create,
+    when using the ordinary way to expand
+    the Suqare tilling.
+\end{definition}
+
+\begin{definition}[Artificial Portal]
+    \label{def:ArtificialPortal}
+    Those portal that made by the Tunneling
+    process, surround by a 8-tile valid loop.
+\end{definition}
+
+The whole world is just a single map,
+the map is maintained in a single list.
+But the world can be a several disconnected,
+space bubble.
+
+A block should save four adjacent block.
+When render it to a Square tile expansion to
+a 2d-gird. inevitablly some Intrinsic Portal
+will be created.
+
+Another Portal type is ArtificialPortal which
+treat as a object on a space block.
+The ArtificialPortal have linked two space block
+together, and if one goes into one from
+one side, he will come out in the conjugate
+space block from the other side.
+
+Tunneling process is a advanced technique,
+for the player have some extra level in the
+game, he would be modify the link of the adjacent
+relationship of a single block.
+
+Now we will be focous to realise this data
+structure
+
+\subsubsection[list]{list}
+The following is a implementation GPT give.
+This list is for save the map data in a
+linked list. The Suqare tile block is save
+in the list.
+\begin{minted}[frame=single, linenos]{cpp}
+#include <iostream>
+#include <list>
+#include <memory>
+#include <fstream>
+#include <string>
+
+template <typename T>
+class MyList {
+private:
+    std::list<std::unique_ptr<T>> elements;
+
+public:
+    // 添加元素
+    void push_back(std::unique_ptr<T> element) {
+        elements.push_back(std::move(element));
+    }
+
+    // 删除第一个元素
+    void pop_front() {
+        if (!elements.empty()) {
+            elements.pop_front();
+        }
+    }
+
+    // 遍历并打印元素
+    void print_all() const {
+        for (const auto& element : elements) {
+            element->print();
+        }
+    }
+
+    // 保存到文件
+    void save_to_file(const std::string& filename) const {
+        std::ofstream outFile(filename);
+        if (!outFile) {
+            std::cerr << "Error opening file for writing." << std::endl;
+            return;
+        }
+
+        for (const auto& element : elements) {
+            outFile << *element << std::endl;
+        }
+
+        std::cout << "List saved to file: " << filename << std::endl;
+    }
+
+    // 从文件加载
+    void load_from_file(const std::string& filename) {
+        std::ifstream inFile(filename);
+        if (!inFile) {
+            std::cerr << "Error opening file for reading." << std::endl;
+            return;
+        }
+
+        elements.clear(); // 清空当前链表
+        while (!inFile.eof()) {
+            auto element = std::make_unique<T>();
+            if (inFile >> *element) {
+                elements.push_back(std::move(element));
+            }
+        }
+
+        std::cout << "List loaded from file: " << filename << std::endl;
+    }
+};
+
+// 示例数据结构
+struct DataBlock {
+    int id;
+    std::string name;
+
+    DataBlock() = default;
+    DataBlock(int id, const std::string& name) : id(id), name(name) {}
+
+    void print() const {
+        std::cout << "ID: " << id << ", Name: " << name << std::endl;
+    }
+
+    // 序列化到文件
+    friend std::ostream& operator<<(std::ostream& os, const DataBlock& block) {
+        os << block.id << " " << block.name;
+        return os;
+    }
+
+    // 从文件反序列化
+    friend std::istream& operator>>(std::istream& is, DataBlock& block) {
+        is >> block.id >> block.name;
+        return is;
+    }
+};
+
+int main() {
+    MyList<DataBlock> myList;
+
+    // 添加元素
+    myList.push_back(std::make_unique<DataBlock>(1, "Block1"));
+    myList.push_back(std::make_unique<DataBlock>(2, "Block2"));
+
+    // 打印链表
+    std::cout << "Initial list:" << std::endl;
+    myList.print_all();
+
+    // 保存到文件
+    myList.save_to_file("data.txt");
+
+    // 从文件加载
+    myList.load_from_file("data.txt");
+
+    // 打印加载后的链表
+    std::cout << "After loading from file:" << std::endl;
+    myList.print_all();
+
+    return 0;
+}
+\end{minted}
+
+\subsubsection[tile]{Square tile}
+
+
 \subsection[fighting]{fighting system}
 \subsection[farming]{farming system}
 

@@ -10,4 +10,5 @@ message("PROJECT_SOURCE_DIR\t${PROJECT_SOURCE_DIR}")
 message("CMAKE_SOURCE_DIR\t${CMAKE_SOURCE_DIR}")
 
 add_subdirectory(deps)
+add_subdirectory(features/topologyMap)
 
