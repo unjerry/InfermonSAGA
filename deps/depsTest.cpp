@@ -1,12 +1,20 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+// #include <multi
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+// Function prototypes
+GLFWwindow *create_window(const char *name, int major, int minor);
+GladGLContext *create_context(GLFWwindow *window);
+void free_context(GladGLContext *context);
+void draw(GLFWwindow *window, GladGLContext *context, float r, float g, float b);
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
+
 int main()
 {
     // glfw: initialize and configure
@@ -32,7 +40,7 @@ int main()
     }
     glfwMakeContextCurrent(window);
     GladGLContext *gl;
-    gl = (GladGLContext *)calloc(1, sizeof(GladGLContext));
+    gl = create_context(window);
     if (!gl)
     {
         throw std::invalid_argument("Failed to create context");
@@ -43,11 +51,11 @@ int main()
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
-    // if ()
-    // {
-    //     std::cout << "Failed to initialize GLAD" << std::endl;
-    //     throw std::invalid_argument("Failed to initialize GLAD");
-    // }
+    if (!gl)
+    {
+        std::cout << "Failed to initialize GL contexts" << std::endl;
+        free_context(gl);
+    }
     // framebuffer_size_callback = default_framebuffer_size_callback;
     // key_callback = processInput;
     // glfwSetFramebufferSizeCallback(window, this->framebuffer_size_callback);
@@ -125,4 +133,35 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     //     else if (action == GLFW_RELEASE)
     //         Breakout.Keys[key] = false;
     // }
+}
+GLFWwindow *create_window(const char *name, int major, int minor)
+{
+    std::cout << "Creating Window, OpenGL " << major << "." << minor << ": " << name << std::endl;
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
+    GLFWwindow *window = glfwCreateWindow(800, 600, name, NULL, NULL);
+    return window;
+}
+
+GladGLContext *create_context(GLFWwindow *window)
+{
+    glfwMakeContextCurrent(window);
+
+    GladGLContext *context = (GladGLContext *)calloc(1, sizeof(GladGLContext));
+    if (!context)
+        return NULL;
+
+    int version = gladLoadGLContext(context, glfwGetProcAddress);
+    std::cout << "Loaded OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
+
+    return context;
+}
+
+void free_context(GladGLContext *context)
+{
+    free(context);
 }
